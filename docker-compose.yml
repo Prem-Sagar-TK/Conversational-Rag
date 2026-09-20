@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  conversational-rag:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: conversational-rag-app
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-text-embedding-3-small}
+      - CHROMA_PERSIST_DIRECTORY=/app/backend/chroma_db
+      - CHUNK_SIZE=1000
+      - CHUNK_OVERLAP=150
+      - TOP_K=4
+      - MAX_RECENT_MESSAGES=6
+      - SUMMARY_TRIGGER=6
+    volumes:
+      - chroma_data:/app/backend/chroma_db
+    restart: unless-stopped
+
+volumes:
+  chroma_data:
+    driver: local
